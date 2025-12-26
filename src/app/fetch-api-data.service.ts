@@ -12,8 +12,7 @@ const apiUrl = 'https://tonys-flix-9de78e076f9d.herokuapp.com/';
 export class FetchApiDataService {
   // Inject the HttpClient module to the constructor params
   // This will provide HttpClient to the entire class, making it available via this.http
-  constructor(private http: HttpClient) {
-  }
+  constructor(private http: HttpClient) { }
 
   // Non-typed response extraction
   private extractResponseData(res: any): any {
@@ -71,7 +70,7 @@ export class FetchApiDataService {
   // @returns Requested director object
   public getDirector(directorName: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + `directors/${directorName}`, {
+    return this.http.get(apiUrl + `movies/directors/${directorName}`, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       }),
@@ -86,7 +85,7 @@ export class FetchApiDataService {
   // @returns Genre info
   public getGenre(genreName: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + `genres/${genreName}`, {
+    return this.http.get(apiUrl + `movies/genre/${genreName}`, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })
@@ -114,10 +113,10 @@ export class FetchApiDataService {
   // Making api call for adding movie to user favorites
   // @param title
   // @returns Add a movie to favorites
-  public addFavoriteMovie(title: string): Observable<any> {
+  public addFavoriteMovie(MovieID: string): Observable<any> {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    return this.http.post(apiUrl + `users/${username}/movies/${title}`, null, {
+    return this.http.post(apiUrl + `users/${username}/movies/${MovieID}`, null, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })
@@ -130,10 +129,10 @@ export class FetchApiDataService {
   // Making api call to delete a movie from user favorites
   // @param title
   // @returns Delete a movie from favorites
-  public deleteFavoriteMovie(title: string): Observable<any> {
+  public deleteFavoriteMovie(MovieID: string): Observable<any> {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
-    return this.http.delete(apiUrl + `users/${username}/movies/${title}`, {
+    return this.http.delete(apiUrl + `users/${username}/movies/${MovieID}`, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })
