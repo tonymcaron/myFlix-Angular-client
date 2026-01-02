@@ -30,7 +30,7 @@ export class UserLoginFormComponent implements OnInit {
         duration: 2000,
       });
     }, (result) => {
-      this.snackBar.open('Login failed. Please try again later' + result, 'OK', {
+      this.snackBar.open('Login failed. Please try again later ' + result, 'OK', {
         duration: 2000,
       });
     });
