@@ -36,7 +36,9 @@ export class UserProfileViewComponent implements OnInit {
     this.user.Birthday = v;
   }
 
-  // Method to fetch user data
+  /** 
+  * Method to fetch user data  
+  */
   getUserData(): void {
     const localUser: string | null = localStorage.getItem('user');
 
@@ -63,7 +65,9 @@ export class UserProfileViewComponent implements OnInit {
     );
   }
 
-  // Method to update user info
+  /** 
+  * Method to update user info
+  */
   updateUser(): void {
     // Create update data object w/o password (unless a new password is set)
     const updateData: any = {
@@ -96,7 +100,10 @@ export class UserProfileViewComponent implements OnInit {
     );
   }
 
-  // Method to set the favorite movies array
+  /** 
+  * Method to set the favorite movies array
+  * @return Favorite movies of the user
+  */
   getFavoriteMovies(): void {
     this.fetchApiData.getAllMovies().subscribe((resp: any) => {
       const allMovies: any[] = resp;
@@ -111,7 +118,10 @@ export class UserProfileViewComponent implements OnInit {
     );
   }
 
-  // Handler to remove a movie from user favorites
+  /** 
+  * Handler to remove a movie from user favorites
+  * @param movieId - ID of the movie to be removed
+  */
   removeFavorite(movieId: string): void {
     const localFavorites: any[] = [...this.favoriteMovies];
 
@@ -137,8 +147,10 @@ export class UserProfileViewComponent implements OnInit {
     );
   }
 
-  // Method top open dialog with director info
-  // @param director - Director info object
+  /** 
+  * Method top open dialog with director info
+  * @param director - Director info object
+  */
   openDirectorDialog(director: any): void {
     this.dialog.open(DirectorDialogComponent, {
       width: '400px',
@@ -146,8 +158,10 @@ export class UserProfileViewComponent implements OnInit {
     });
   }
 
-  // Method to open dialog with genre info
-  // @param genre - Genre info object
+  /** 
+  * Method to open dialog with genre info
+  * @param genre - Genre info object
+  */
   openGenreDialog(genre: any): void {
     this.dialog.open(GenreDialogComponent, {
       width: '400px',
@@ -155,8 +169,10 @@ export class UserProfileViewComponent implements OnInit {
     });
   }
 
-  // Method to open dialog with movie details
-  // @param movie - Movie info object
+  /** 
+  * Method to open dialog with movie details
+  * @param movie - Movie info object
+  */
   openMovieDetailsDialog(movie: any): void {
     this.dialog.open(MovieDetailsDialogComponent, {
       width: '400px',

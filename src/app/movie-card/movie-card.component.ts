@@ -25,7 +25,9 @@ export class MovieCardComponent implements OnInit {
     this.getMovies();
   }
 
-  // Method to fetch all movies
+  /** 
+  * Method to fetch all movies
+  */
   getMovies(): void {
     this.fetchApiData.getAllMovies().subscribe((resp: any) => {
       this.movies = resp;
@@ -33,9 +35,11 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  // Check if a movie is a favorite
-  // @param movieId - ID of movie to check
-  // @returns True if movie is favorited, false if not favorited
+  /** 
+  * Check if a movie is a favorite
+  * @param movieId - ID of movie to check
+  * @returns True if movie is favorited, false if not favorited
+  */
   isFavorite(movieId: string): boolean {
     const localUser: string | null = localStorage.getItem('user');
     if (!localUser) return false;
@@ -44,7 +48,10 @@ export class MovieCardComponent implements OnInit {
     return parsedUser.FavoriteMovies?.includes(movieId) || false;
   }
 
-  // Handler to add or remove a movie from favorites
+  /** 
+  * Handler to add or remove a movie from favorites
+  * @param movieId - ID of the movie to be added or removed
+  */
   handleFavorite(movieId: string): void {
     const localUser: string | null = localStorage.getItem('user');
 
@@ -118,8 +125,10 @@ export class MovieCardComponent implements OnInit {
     );
   }
 
-  // Method top open dialog with director info
-  // @param director - Director info object
+  /** 
+  * Method to open dialog with director info
+  * @param director - Director info object
+  */
   openDirectorDialog(director: any): void {
     this.dialog.open(DirectorDialogComponent, {
       width: '400px',
@@ -127,8 +136,10 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  // Method to open dialog with genre info
-  // @param genre - Genre info object
+  /** 
+  * Method to open dialog with genre info
+  * @param genre - Genre info object
+  */
   openGenreDialog(genre: any): void {
     this.dialog.open(GenreDialogComponent, {
       width: '400px',
@@ -136,8 +147,10 @@ export class MovieCardComponent implements OnInit {
     });
   }
 
-  // Method to open dialog with movie details
-  // @param movie - Movie info object
+  /** 
+  * Method to open dialog with movie details
+  * @param movie - Movie info object
+  */
   openMovieDetailsDialog(movie: any): void {
     this.dialog.open(MovieDetailsDialogComponent, {
       width: '400px',
