@@ -27,11 +27,4 @@ export class WelcomePageComponent implements OnInit {
       width: '280px'
     });
   }
-
-  // This is the function that will open the dialog when the movies button is clicked
-  openMoviesDialog(): void {
-    this.dialog.open(MovieCardComponent, {
-      width: '500px',
-    });
-  }
 }

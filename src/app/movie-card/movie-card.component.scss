@@ -1,0 +1,49 @@
+.movie-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
+}
+
+.movie-card {
+  width: 300px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: OrangeRed;
+  color: Wheat;
+
+  button {
+    color: Wheat;
+    font-size: large;
+  }
+}
+
+mat-card-actions {
+  margin-top: auto;
+}
+
+@media (max-width: 576px) {
+  .movie-grid {
+    grid: auto / auto;
+  }
+}
+
+@media (min-width: 577px) {
+  .movie-grid {
+    grid: auto / auto auto;
+  }
+}
+
+@media (min-width: 850px) {
+  .movie-grid {
+    grid: auto / auto auto auto;
+  }
+}
+
+@media (min-width: 1125px) {
+  .movie-grid {
+    grid: auto / auto auto auto auto;
+  }
+}

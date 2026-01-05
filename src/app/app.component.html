@@ -1,1 +1,6 @@
+<mat-toolbar *ngIf="isLoggedIn" style="background-color: rgb(245, 222, 179); color: black;">
+  <button mat-button routerLink="/movies"><strong>Movies</strong></button>
+  <button mat-button routerLink="/profile"><strong>Profile</strong></button>
+  <button mat-button (click)="logout()"><strong>Logout</strong></button>
+</mat-toolbar>
 <router-outlet></router-outlet>

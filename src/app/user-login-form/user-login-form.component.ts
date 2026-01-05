@@ -22,19 +22,40 @@ export class UserLoginFormComponent implements OnInit {
   ngOnInit(): void { }
 
   // This function is responsible for sending the form inputs to the backend
-  loginUser(): void {
+  userLogin(): void {
+    // DEBUGGING LOG
+    console.log('Attempting login with user data: ', this.userData);
+
     this.fetchApiData.userLogin(this.userData).subscribe((result) => {
+      // DEBUGGING LOG
+      console.log('Login response: ', result);
+
+      const user = result.user || result.User || result;
+      const token = result.token || result.Token;
+
+      if (!user || !token) {
+        this.snackBar.open('Invalid login response from server', 'OK', {
+          duration: 5000,
+        });
+        console.error('Invalid response format: ', result);
+      }
+
       // Logic for successful user login goes here!
-      localStorage.setItem('user', JSON.stringify(result.user));
-      localStorage.setItem('token', result.token);
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('token', token);
+
       this.dialogRef.close();
       this.snackBar.open('Login successful!', 'OK', {
-        duration: 2000,
+        duration: 5000,
       });
       this.router.navigate(['movies'])
-    }, (result) => {
-      this.snackBar.open('Login failed. Please try again later ' + result, 'OK', {
-        duration: 2000,
+    }, (error) => {
+      console.error('Full login error: ', error); // DEBUG: see full error
+      console.error('Error status: ', error.status); // DEBUG: status code
+      console.error('Error body: ', error.error); // DEBUG: error message from API
+
+      this.snackBar.open('Login failed: ' + (error.error?.message || error.message || 'Please try again later'), 'OK', {
+        duration: 5000,
       });
     });
   }
