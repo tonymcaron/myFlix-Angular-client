@@ -69,8 +69,6 @@ export class UserProfileViewComponent implements OnInit {
     this.originalUser = { ...parsedUser };
     this.birthday = this.formatBirthdayForDisplay(parsedUser.Birthday || '');
 
-    this.getFavoriteMovies();
-
     this.fetchApiData.getUser().subscribe((result) => {
       this.user = { ...result };
       this.originalUser = { ...result };
