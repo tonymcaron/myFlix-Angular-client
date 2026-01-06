@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { DirectorDialogComponent } from '../director-dialog/director-dialog.component';
 import { GenreDialogComponent } from '../genre-dialog/genre-dialog.component';
 import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-details-dialog.component';
+import { User, Movie, Director, Genre } from '../models';
 
 @Component({
   selector: 'app-user-profile-view',
@@ -13,9 +14,10 @@ import { MovieDetailsDialogComponent } from '../movie-details-dialog/movie-detai
   styleUrls: ['./user-profile-view.component.scss']
 })
 export class UserProfileViewComponent implements OnInit {
-  @Input() user: any = {};
+  @Input() user: User & { Password?: string } = {} as User;
   @Input() birthday: string = '';
-  favoriteMovies: any[] = [];
+  favoriteMovies: Movie[] = [];
+  isLoadingFavorites: boolean = true;
 
   constructor(
     public fetchApiData: FetchApiDataService,
@@ -47,7 +49,7 @@ export class UserProfileViewComponent implements OnInit {
       return;
     }
 
-    const parsedUser: any = JSON.parse(localUser);
+    const parsedUser: User = JSON.parse(localUser);
     this.birthday = parsedUser.Birthday ? new Date(parsedUser.Birthday).toLocaleDateString() : '';
 
     this.getFavoriteMovies();
@@ -55,7 +57,7 @@ export class UserProfileViewComponent implements OnInit {
     this.fetchApiData.getUser().subscribe((result) => {
       this.user = result;
       delete this.user.Password;
-      this.birthday = new Date(this.user.Birthday).toLocaleDateString();
+      this.birthday = this.user.Birthday ? new Date(this.user.Birthday).toLocaleDateString() : '';
       localStorage.setItem('user', JSON.stringify(result));
       this.getFavoriteMovies();
     },
@@ -70,7 +72,7 @@ export class UserProfileViewComponent implements OnInit {
   */
   updateUser(): void {
     // Create update data object w/o password (unless a new password is set)
-    const updateData: any = {
+    const updateData: Partial<User> & { Password?: string } = {
       Username: this.user.Username,
       Email: this.user.Email,
       Birthday: this.user.Birthday,
@@ -100,47 +102,43 @@ export class UserProfileViewComponent implements OnInit {
     );
   }
 
-  /** 
+  /**
   * Method to set the favorite movies array
   * @return Favorite movies of the user
   */
   getFavoriteMovies(): void {
-    this.fetchApiData.getAllMovies().subscribe((resp: any) => {
-      const allMovies: any[] = resp;
+    this.isLoadingFavorites = true;
+    this.fetchApiData.getAllMovies().subscribe((resp: Movie[]) => {
+      const allMovies: Movie[] = resp;
       this.favoriteMovies = allMovies.filter((movie) =>
         this.user.FavoriteMovies && this.user.FavoriteMovies.includes(movie._id)
       );
-      console.log('Favorite movies: ', this.favoriteMovies); // DEBUG LOG
+      this.isLoadingFavorites = false;
     },
       (error) => {
         console.error('Error fetching movies: ', error);
+        this.isLoadingFavorites = false;
       }
     );
   }
 
-  /** 
+  /**
   * Handler to remove a movie from user favorites
   * @param movieId - ID of the movie to be removed
   */
   removeFavorite(movieId: string): void {
-    const localFavorites: any[] = [...this.favoriteMovies];
-
-    const filteredFavorites: any[] = localFavorites.filter((m) => m._id !== movieId);
-    const favoriteIds: string[] = filteredFavorites.map((favorite) => favorite._id);
-
-    // Update user object with new favorites
-    this.user.FavoriteMovies = favoriteIds;
-    this.favoriteMovies = filteredFavorites;
-
-    this.fetchApiData.editUser(this.user).subscribe(
-      (result) => {
+    this.fetchApiData.deleteFavoriteMovie(movieId).subscribe(
+      (_result) => {
+        // Update local state
+        this.favoriteMovies = this.favoriteMovies.filter((m) => m._id !== movieId);
+        this.user.FavoriteMovies = this.user.FavoriteMovies.filter((id) => id !== movieId);
+        localStorage.setItem('user', JSON.stringify(this.user));
         this.snackBar.open('Movie removed from favorites', 'OK', {
           duration: 2000,
         });
-        localStorage.setItem('user', JSON.stringify(result))
       },
-      (result) => {
-        this.snackBar.open('Failed to remove movie from favorites: ' + result, 'OK', {
+      (error) => {
+        this.snackBar.open('Failed to remove movie from favorites: ' + error.message, 'OK', {
           duration: 2000
         });
       }
@@ -151,7 +149,7 @@ export class UserProfileViewComponent implements OnInit {
   * Method top open dialog with director info
   * @param director - Director info object
   */
-  openDirectorDialog(director: any): void {
+  openDirectorDialog(director: Director): void {
     this.dialog.open(DirectorDialogComponent, {
       width: '400px',
       data: director,
@@ -162,7 +160,7 @@ export class UserProfileViewComponent implements OnInit {
   * Method to open dialog with genre info
   * @param genre - Genre info object
   */
-  openGenreDialog(genre: any): void {
+  openGenreDialog(genre: Genre): void {
     this.dialog.open(GenreDialogComponent, {
       width: '400px',
       data: genre,
@@ -173,7 +171,7 @@ export class UserProfileViewComponent implements OnInit {
   * Method to open dialog with movie details
   * @param movie - Movie info object
   */
-  openMovieDetailsDialog(movie: any): void {
+  openMovieDetailsDialog(movie: Movie): void {
     this.dialog.open(MovieDetailsDialogComponent, {
       width: '400px',
       data: movie,

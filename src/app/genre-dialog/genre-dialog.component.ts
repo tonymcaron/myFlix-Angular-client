@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Genre } from '../models';
 
 @Component({
   selector: 'app-genre-dialog',
@@ -10,7 +11,7 @@ export class GenreDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<GenreDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public genre: any
+    @Inject(MAT_DIALOG_DATA) public genre: Genre
   ) { }
 
   closeDialog(): void {
