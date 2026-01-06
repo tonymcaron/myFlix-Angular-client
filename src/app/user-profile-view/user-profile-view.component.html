@@ -4,7 +4,7 @@
       <mat-card-title>Edit Your Profile</mat-card-title>
     </mat-card-header>
     <mat-card-content>
-      <form>
+      <form (ngSubmit)="updateUser()">
         <mat-form-field>
           <mat-label>Username</mat-label>
           <input matInput type="text" [(ngModel)]="user.Username" placeholder="Please enter a new username"
@@ -24,13 +24,13 @@
           <input matInput type="text" [(ngModel)]="displayBirthday" placeholder="Birthday" name="Birthday"
             onfocus="this.type='date'" onblur="this.type='text'" />
         </mat-form-field>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" type="submit">
+            Update
+          </button>
+        </mat-card-actions>
       </form>
     </mat-card-content>
-    <mat-card-actions>
-      <button mat-raised-button color="primary" (click)="updateUser()">
-        Update
-      </button>
-    </mat-card-actions>
   </mat-card>
 </div>
 <div class="favorite-container">
