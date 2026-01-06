@@ -184,9 +184,11 @@ export class FetchApiDataService {
   */
   public editUser(userDetails: Partial<User> & { Password?: string }): Observable<User> {
     const token = localStorage.getItem('token');
-    const username = userDetails.Username;
 
-    return this.http.put<User>(apiUrl + `users/${username}`, userDetails, {
+    const storedUser = localStorage.getItem('user');
+    const currentUsername = storedUser ? JSON.parse(storedUser).Username : userDetails.Username;
+
+    return this.http.put<User>(apiUrl + `users/${currentUsername}`, userDetails, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })

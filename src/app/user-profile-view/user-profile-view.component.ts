@@ -18,6 +18,7 @@ export class UserProfileViewComponent implements OnInit {
   @Input() birthday: string = '';
   favoriteMovies: Movie[] = [];
   isLoadingFavorites: boolean = true;
+  originalUser: User & { Password?: string } = {} as User;
 
   constructor(
     public fetchApiData: FetchApiDataService,
@@ -30,12 +31,26 @@ export class UserProfileViewComponent implements OnInit {
     this.getUserData();
   }
 
-  // Display the birthday in readable format
-  get displayBirthday() {
-    return this.birthday;
+  // Display the birthday in date input format (YYYY-MM-DD)
+  get displayBirthday(): string {
+    if (!this.user.Birthday) return '';
+    return this.user.Birthday.split('T')[0];
   }
-  set displayBirthday(v) {
-    this.user.Birthday = v;
+
+  set displayBirthday(value: string) {
+    if (value) {
+      this.user.Birthday = value + 'T00:00:00.000Z';
+    }
+  }
+
+  /**
+   * Helper method to format birthday without timezone issues
+   * @param dateString - ISO date string from the backend
+   * @returns Formatted date string (YYY-MM-DD)
+   */
+  private formatBirthdayForDisplay(dateString: string): string {
+    if (!dateString) return '';
+    return dateString.split('T')[0];
   }
 
   /** 
@@ -50,19 +65,24 @@ export class UserProfileViewComponent implements OnInit {
     }
 
     const parsedUser: User = JSON.parse(localUser);
-    this.birthday = parsedUser.Birthday ? new Date(parsedUser.Birthday).toLocaleDateString() : '';
+    this.user = { ...parsedUser };
+    this.originalUser = { ...parsedUser };
+    this.birthday = this.formatBirthdayForDisplay(parsedUser.Birthday || '');
 
     this.getFavoriteMovies();
 
     this.fetchApiData.getUser().subscribe((result) => {
-      this.user = result;
+      this.user = { ...result };
+      this.originalUser = { ...result };
       delete this.user.Password;
-      this.birthday = this.user.Birthday ? new Date(this.user.Birthday).toLocaleDateString() : '';
+      delete this.originalUser.Password;
+      this.birthday = this.formatBirthdayForDisplay(this.user.Birthday || '');
       localStorage.setItem('user', JSON.stringify(result));
       this.getFavoriteMovies();
     },
       (error) => {
         console.error('Error fetching user data: ', error);
+        this.getFavoriteMovies();
       }
     );
   }
@@ -71,28 +91,49 @@ export class UserProfileViewComponent implements OnInit {
   * Method to update user info
   */
   updateUser(): void {
-    // Create update data object w/o password (unless a new password is set)
-    const updateData: Partial<User> & { Password?: string } = {
+    const hasChanges =
+      this.user.Username !== this.originalUser.Username ||
+      this.user.Email !== this.originalUser.Email ||
+      this.user.Birthday !== this.originalUser.Birthday ||
+      (this.user.Password && this.user.Password.trim() !== '');
+
+    if (!hasChanges) {
+      this.snackBar.open('No changes to update', 'OK', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Create update data object
+    const updateData: any = {
       Username: this.user.Username,
       Email: this.user.Email,
       Birthday: this.user.Birthday,
-      FavoriteMovies: this.user.FavoriteMovies
+      FavoriteMovies: this.user.FavoriteMovies || []
     };
 
-    // Only include passwork if it has been changed
+    // Only include password if it has been changed
     if (this.user.Password && this.user.Password.trim() !== '') {
       updateData.Password = this.user.Password;
     }
 
     this.fetchApiData.editUser(updateData).subscribe(
       (result) => {
-        this.snackBar.open('Update successful', 'OK', {
-          duration: 5000,
+        this.snackBar.open('Profile updated successfully!', 'OK', {
+          duration: 3000,
         });
-        // Merge result with existing user data
-        const updatedUser = { ...this.user, ...result };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        this.user = updatedUser;
+
+        // Update user with result
+        this.user = { ...result };
+        this.originalUser = { ...result };
+        delete this.user.Password;
+        delete this.originalUser.Password;
+
+        localStorage.setItem('user', JSON.stringify(result));
+        this.birthday = this.formatBirthdayForDisplay(result.Birthday || '');
+
+        // Clear password field after update
+        this.user.Password = '';
       },
       (error) => {
         this.snackBar.open('Update failed: ' + error, 'OK', {
@@ -128,11 +169,21 @@ export class UserProfileViewComponent implements OnInit {
   */
   removeFavorite(movieId: string): void {
     this.fetchApiData.deleteFavoriteMovie(movieId).subscribe(
-      (_result) => {
+      (result) => {
         // Update local state
         this.favoriteMovies = this.favoriteMovies.filter((m) => m._id !== movieId);
         this.user.FavoriteMovies = this.user.FavoriteMovies.filter((id) => id !== movieId);
-        localStorage.setItem('user', JSON.stringify(this.user));
+        this.originalUser.FavoriteMovies = [...this.user.FavoriteMovies];
+
+        // Update with result from API
+        if (result) {
+          localStorage.setItem('user', JSON.stringify(result));
+          this.user = { ...this.user, ...result };
+          this.originalUser = { ...this.user };
+        } else {
+          localStorage.setItem('user', JSON.stringify(this.user));
+        }
+
         this.snackBar.open('Movie removed from favorites', 'OK', {
           duration: 2000,
         });

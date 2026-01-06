@@ -17,22 +17,17 @@ export class UserLoginFormComponent implements OnInit {
     public dialogRef: MatDialogRef<UserLoginFormComponent>,
     public snackBar: MatSnackBar,
     public router: Router
-  ) {}
+  ) { }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   /**
    * Function responsible for sending the form inputs to the backend
    */
   userLogin(): void {
-    // DEBUGGING LOG
-    console.log('Attempting login with user data: ', this.userData);
 
     this.fetchApiData.userLogin(this.userData).subscribe(
       (result) => {
-        // DEBUGGING LOG
-        console.log('Login response: ', result);
-
         const user = result.user || result.User || result;
         const token: string | undefined = result.token || result.Token;
 
@@ -60,7 +55,7 @@ export class UserLoginFormComponent implements OnInit {
 
         this.snackBar.open(
           'Login failed: ' +
-            (error.error?.message || error.message || 'Please try again later'),
+          (error.error?.message || error.message || 'Please try again later'),
           'OK',
           {
             duration: 5000,
