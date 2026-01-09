@@ -54,7 +54,7 @@ export class UserProfileViewComponent implements OnInit {
   }
 
   /** 
-  * Method to fetch user data  
+  * Method to fetch currently logged in user's data  
   */
   getUserData(): void {
     const localUser: string | null = localStorage.getItem('user');
@@ -195,7 +195,7 @@ export class UserProfileViewComponent implements OnInit {
   }
 
   /** 
-  * Method top open dialog with director info
+  * Method to open dialog with director info
   * @param director - Director info object
   */
   openDirectorDialog(director: Director): void {
@@ -217,7 +217,7 @@ export class UserProfileViewComponent implements OnInit {
   }
 
   /** 
-  * Method to open dialog with movie details
+  * Method to open dialog with individual movie details
   * @param movie - Movie info object
   */
   openMovieDetailsDialog(movie: Movie): void {

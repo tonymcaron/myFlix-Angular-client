@@ -21,7 +21,7 @@ export class AppComponent {
   }
 
   /** 
-  * Method to log out user
+  * Method to logout the user
   */
   logout(): void {
     // Clear local storage

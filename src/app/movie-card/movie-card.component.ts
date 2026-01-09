@@ -20,7 +20,7 @@ export class MovieCardComponent implements OnInit {
     public fetchApiData: FetchApiDataService,
     public dialog: MatDialog,
     public snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getMovies();
@@ -150,7 +150,7 @@ export class MovieCardComponent implements OnInit {
   }
 
   /**
-   * Method to open dialog with movie details
+   * Method to open dialog with individual movie details
    * @param movie - Movie info object
    */
   openMovieDetailsDialog(movie: Movie): void {
